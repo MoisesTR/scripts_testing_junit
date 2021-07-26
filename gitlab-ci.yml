@@ -1,0 +1,39 @@
+#image: maven:3.3.9
+
+stages:
+#- build
+- test
+
+variables:
+  # MAVEN_CLI_OPTS: "-s=settings.xml --batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Xms4G -Xmx8G -XX:+UseParallelOldGC -XX:+UseGCOverheadLimit"
+  # MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=settings.xml"
+
+cache:
+  paths:
+  - .m2/repository/
+  - target/
+
+#build stage:
+#  stage: build
+#  only:
+#  #- /^test_.*/
+#  - merge_requests
+#  script:
+#  - mvn $MAVEN_CLI_OPTS compile package -DskipTests=true
+#  tags:
+#  - junit
+
+test stage:
+  stage: test
+  only:
+  #- /^test_.*/
+  - merge_requests
+  script:
+  - bash ./testing.sh
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+  tags:
+  - junit
